@@ -14,8 +14,8 @@ $currentScript = $_SERVER['SCRIPT_NAME'] ?? '';
 $isDashboard = (strpos($currentScript, 'dashboard.php') !== false);
 $isUsers     = (strpos($currentScript, '/users/') !== false);
 
-$dashboardUrl = "/reforestation/{$role}/dashboard.php";
-$usersUrl = "/reforestation/{$role}/users/index.php";
+$dashboardUrl = "/RFP/{$role}/dashboard.php";
+$usersUrl = "/RFP/{$role}/users/index.php";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +23,7 @@ $usersUrl = "/reforestation/{$role}/users/index.php";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= h($pageTitle) ?></title>
-    <link rel="stylesheet" href="/reforestation/assets/css/style.css?v=4">
+    <link rel="stylesheet" href="/RFP/assets/css/style.css?v=4">
     <?= $extraHead ?? '' ?>
 </head>
 <body>
@@ -42,7 +42,7 @@ $usersUrl = "/reforestation/{$role}/users/index.php";
     <?php if ($fullName): ?>
         <div class="topbar-right">
             <span class="topbar-user"><?= h($fullName) ?> (<?= h(ucfirst($role)) ?>)</span>
-            <a class="topbar-logout" href="/reforestation/auth/logout.php">Logout</a>
+            <a class="topbar-logout" href="/RFP/auth/logout.php">Logout</a>
         </div>
     <?php endif; ?>
 </nav>

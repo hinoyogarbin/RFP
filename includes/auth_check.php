@@ -18,7 +18,7 @@ if (session_status() === PHP_SESSION_NONE) {
 function requireLogin(): void
 {
     if (empty($_SESSION['user_id'])) {
-        header('Location: /reforestation/auth/login.php');
+        header('Location: /RFP/auth/login.php');
         exit;
     }
 }
@@ -42,13 +42,13 @@ function redirectToDashboard(string $role): void
 {
     switch ($role) {
         case 'admin':
-            header('Location: /reforestation/admin/dashboard.php');
+            header('Location: /RFP/admin/dashboard.php');
             break;
         case 'manager':
-            header('Location: /reforestation/manager/dashboard.php');
+            header('Location: /RFP/manager/dashboard.php');
             break;
         default:
-            header('Location: /reforestation/user/dashboard.php');
+            header('Location: /RFP/user/dashboard.php');
             break;
     }
     exit;

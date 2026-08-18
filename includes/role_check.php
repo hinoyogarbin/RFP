@@ -61,13 +61,13 @@ function denyAccess(): void
     <head>
         <meta charset="UTF-8">
         <title>Access Denied</title>
-        <link rel="stylesheet" href="/reforestation/assets/css/style.css?v=4">
+        <link rel="stylesheet" href="/RFP/assets/css/style.css?v=4">
     </head>
     <body>
         <div class="denied-box">
             <h1>Access Denied</h1>
             <p>You do not have permission to access this page.</p>
-            <a class="btn" href="/reforestation/index.php">Back to Dashboard</a>
+            <a class="btn" href="/RFP/index.php">Back to Dashboard</a>
         </div>
     </body>
     </html>

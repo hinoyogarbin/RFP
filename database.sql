@@ -35,3 +35,19 @@ VALUES (
     'admin',
     'active'
 );
+
+-- ============================================================
+-- Activity Logs
+-- Tracks who navigated where and when, for admin oversight.
+-- Filterable by role (admin/manager/user) in the admin panel.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS activity_logs (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    role ENUM('admin', 'manager', 'user') NOT NULL,
+    page VARCHAR(255) NOT NULL,
+    ip_address VARCHAR(45) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
