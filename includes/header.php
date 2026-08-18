@@ -13,9 +13,18 @@ $fullName = $_SESSION['full_name'] ?? '';
 $currentScript = $_SERVER['SCRIPT_NAME'] ?? '';
 $isDashboard = (strpos($currentScript, 'dashboard.php') !== false);
 $isUsers     = (strpos($currentScript, '/users/') !== false);
+$isLogs      = (strpos($currentScript, 'logs.php') !== false);
 
 $dashboardUrl = "/RFP/{$role}/dashboard.php";
 $usersUrl = "/RFP/{$role}/users/index.php";
+$logsUrl = "/RFP/admin/logs.php";
+
+// Log every page navigation by a logged-in user (admin or manager).
+require_once __DIR__ . '/log_functions.php';
+if (!empty($_SESSION['user_id'])) {
+    logActivity($_SESSION['user_id'], $fullName, $role, 'Page View', 'Navigation', "Visited {$currentScript}", 'success');
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,6 +44,9 @@ $usersUrl = "/RFP/{$role}/users/index.php";
             <?php endif; ?>
             <?php if (in_array($role, ['admin', 'manager'], true)): ?>
                 <a class="topbar-item <?= $isUsers ? 'active' : '' ?>" href="<?= h($usersUrl) ?>">User Management</a>
+            <?php endif; ?>
+            <?php if ($role === 'admin'): ?>
+                <a class="topbar-item <?= $isLogs ? 'active' : '' ?>" href="<?= h($logsUrl) ?>">Activity Logs</a>
             <?php endif; ?>
         </div>
     </div>

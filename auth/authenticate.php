@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/user_functions.php';
+require_once __DIR__ . '/../includes/log_functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: login.php');
@@ -22,6 +23,7 @@ if ($username === '' || $password === '') {
 $user = findUserByUsername($username);
 
 if (!$user || !password_verify($password, $user['password'])) {
+    logActivity(null, $username ?: '(empty)', 'user', 'Failed Login Attempt', 'Authentication', "Failed login attempt for username '{$username}'.", 'failed');
     $_SESSION['login_error'] = $genericError;
     $_SESSION['old_username'] = $username;
     header('Location: login.php');
@@ -29,6 +31,7 @@ if (!$user || !password_verify($password, $user['password'])) {
 }
 
 if ($user['status'] !== 'active') {
+    logActivity($user['user_id'], $user['full_name'], $user['role'], 'Login', 'Authentication', 'Login blocked: account inactive.', 'warning');
     $_SESSION['login_error'] = 'This account is inactive. Please contact an administrator.';
     $_SESSION['old_username'] = $username;
     header('Location: login.php');
@@ -42,5 +45,7 @@ $_SESSION['user_id']   = $user['user_id'];
 $_SESSION['full_name'] = $user['full_name'];
 $_SESSION['username']  = $user['username'];
 $_SESSION['role']      = $user['role'];
+
+logActivity($user['user_id'], $user['full_name'], $user['role'], 'Login', 'Authentication', 'User logged in successfully.', 'success');
 
 redirectToDashboard($user['role']);
