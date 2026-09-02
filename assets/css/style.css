@@ -293,6 +293,59 @@ a {
     color: #a13333;
 }
 
+.location-match {
+    background-color: #e6f4ea;
+    border-color: #1a5c2e;
+    color: #1a5c2e;
+}
+
+.location-mismatch {
+    background-color: #f4e6e6;
+    border-color: #a13333;
+    color: #a13333;
+}
+
+.location-unavailable {
+    background-color: #f0f0f0;
+    border-color: #999999;
+    color: #555555;
+}
+
+/* ---------- Field Photos ---------- */
+
+.photo-thumb {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border: 1px solid #cccccc;
+    display: block;
+}
+
+.photo-full {
+    max-width: 100%;
+    width: 480px;
+    height: auto;
+    border: 1px solid #cccccc;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.gps-marker {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 1px #333333;
+}
+
+.gps-marker-exif {
+    background-color: #1a5c2e;
+}
+
+.gps-marker-recorded {
+    background-color: #a13333;
+}
+
 /* ---------- Details view ---------- */
 
 .details-box {

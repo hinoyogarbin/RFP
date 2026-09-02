@@ -62,3 +62,38 @@ CREATE TABLE activity_logs (
     INDEX idx_status (status),
     INDEX idx_created_at (created_at)
 );
+
+-- ============================================================
+-- Field Photos
+-- Photos captured/uploaded by field operators (User role),
+-- with EXIF metadata extracted on upload (GPS coordinates,
+-- date/time, camera make/model) and compared against the
+-- device's recorded GPS position at time of upload.
+-- ============================================================
+CREATE TABLE field_photos (
+    photo_id            INT AUTO_INCREMENT PRIMARY KEY,
+    user_id              INT NOT NULL,
+    file_name            VARCHAR(255) NOT NULL,
+    original_name        VARCHAR(255) NOT NULL,
+    file_size            INT NOT NULL,
+
+    recorded_latitude    DECIMAL(10,7) NULL,
+    recorded_longitude   DECIMAL(10,7) NULL,
+
+    exif_latitude        DECIMAL(10,7) NULL,
+    exif_longitude       DECIMAL(10,7) NULL,
+    exif_datetime        DATETIME NULL,
+    camera_make          VARCHAR(100) NULL,
+    camera_model         VARCHAR(100) NULL,
+
+    distance_meters      DECIMAL(10,2) NULL,
+    location_match       ENUM('match', 'mismatch', 'unavailable') NOT NULL DEFAULT 'unavailable',
+
+    uploaded_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+
+    INDEX idx_user (user_id),
+    INDEX idx_uploaded_at (uploaded_at),
+    INDEX idx_location_match (location_match)
+);

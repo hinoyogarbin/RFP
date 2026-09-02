@@ -14,10 +14,12 @@ $currentScript = $_SERVER['SCRIPT_NAME'] ?? '';
 $isDashboard = (strpos($currentScript, 'dashboard.php') !== false);
 $isUsers     = (strpos($currentScript, '/users/') !== false);
 $isLogs      = (strpos($currentScript, 'logs.php') !== false);
+$isPhotos    = (strpos($currentScript, '/photos/') !== false);
 
 $dashboardUrl = "/RFP/{$role}/dashboard.php";
 $usersUrl = "/RFP/{$role}/users/index.php";
 $logsUrl = "/RFP/admin/logs.php";
+$photosUrl = "/RFP/user/photos/index.php";
 
 // Log every page navigation by a logged-in user (admin or manager).
 require_once __DIR__ . '/log_functions.php';
@@ -32,7 +34,7 @@ if (!empty($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= h($pageTitle) ?></title>
-    <link rel="stylesheet" href="/RFP/assets/css/style.css?v=4">
+    <link rel="stylesheet" href="/RFP/assets/css/style.css?v=5">
     <?= $extraHead ?? '' ?>
 </head>
 <body>
@@ -47,6 +49,9 @@ if (!empty($_SESSION['user_id'])) {
             <?php endif; ?>
             <?php if ($role === 'admin'): ?>
                 <a class="topbar-item <?= $isLogs ? 'active' : '' ?>" href="<?= h($logsUrl) ?>">Activity Logs</a>
+            <?php endif; ?>
+            <?php if ($role === 'user'): ?>
+                <a class="topbar-item <?= $isPhotos ? 'active' : '' ?>" href="<?= h($photosUrl) ?>">Field Photos</a>
             <?php endif; ?>
         </div>
     </div>
