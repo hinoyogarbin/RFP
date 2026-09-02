@@ -22,7 +22,7 @@ unset($_SESSION['old_username']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Reforestation Management Platform</title>
-    <link rel="stylesheet" href="/reforestation/assets/css/style.css?v=4">
+    <link rel="stylesheet" href="/RFP/assets/css/style.css?v=4">
 </head>
 <body>
 <main class="login-main">

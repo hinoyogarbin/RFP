@@ -13,9 +13,18 @@ $fullName = $_SESSION['full_name'] ?? '';
 $currentScript = $_SERVER['SCRIPT_NAME'] ?? '';
 $isDashboard = (strpos($currentScript, 'dashboard.php') !== false);
 $isUsers     = (strpos($currentScript, '/users/') !== false);
+$isLogs      = (strpos($currentScript, 'logs.php') !== false);
 
-$dashboardUrl = "/reforestation/{$role}/dashboard.php";
-$usersUrl = "/reforestation/{$role}/users/index.php";
+$dashboardUrl = "/RFP/{$role}/dashboard.php";
+$usersUrl = "/RFP/{$role}/users/index.php";
+$logsUrl = "/RFP/admin/logs.php";
+
+// Log every page navigation by a logged-in user (admin or manager).
+require_once __DIR__ . '/log_functions.php';
+if (!empty($_SESSION['user_id'])) {
+    logActivity($_SESSION['user_id'], $fullName, $role, 'Page View', 'Navigation', "Visited {$currentScript}", 'success');
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +32,7 @@ $usersUrl = "/reforestation/{$role}/users/index.php";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= h($pageTitle) ?></title>
-    <link rel="stylesheet" href="/reforestation/assets/css/style.css?v=4">
+    <link rel="stylesheet" href="/RFP/assets/css/style.css?v=4">
     <?= $extraHead ?? '' ?>
 </head>
 <body>
@@ -36,13 +45,16 @@ $usersUrl = "/reforestation/{$role}/users/index.php";
             <?php if (in_array($role, ['admin', 'manager'], true)): ?>
                 <a class="topbar-item <?= $isUsers ? 'active' : '' ?>" href="<?= h($usersUrl) ?>">User Management</a>
             <?php endif; ?>
+            <?php if ($role === 'admin'): ?>
+                <a class="topbar-item <?= $isLogs ? 'active' : '' ?>" href="<?= h($logsUrl) ?>">Activity Logs</a>
+            <?php endif; ?>
         </div>
     </div>
 
     <?php if ($fullName): ?>
         <div class="topbar-right">
             <span class="topbar-user"><?= h($fullName) ?> (<?= h(ucfirst($role)) ?>)</span>
-            <a class="topbar-logout" href="/reforestation/auth/logout.php">Logout</a>
+            <a class="topbar-logout" href="/RFP/auth/logout.php">Logout</a>
         </div>
     <?php endif; ?>
 </nav>
