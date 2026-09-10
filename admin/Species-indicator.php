@@ -23,11 +23,11 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-6">
+  <div class="row species-layout">
+    <div class="col-md-6 species-map-col">
       <div id="map" style="height: 500px; border-radius: 8px;"></div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-6 species-results-col">
       <div id="resultCount" class="mb-2 text-muted"></div>
       <div id="results" class="row g-2" style="max-height: 500px; overflow-y: auto;"></div>
       <div class="d-flex justify-content-between mt-2">
@@ -37,8 +37,7 @@ require_once __DIR__ . '/../includes/header.php';
       </div>
     </div>
   </div>
-</div>
-
+ 
 <!-- Observation Detail Modal -->
 <div class="modal fade" id="observationModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">

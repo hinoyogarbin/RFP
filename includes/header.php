@@ -24,7 +24,7 @@ $currentScript = $_SERVER['SCRIPT_NAME'] ?? '';
 $isDashboard = (strpos($currentScript, 'dashboard.php') !== false);
 $isUsers     = (strpos($currentScript, '/users/') !== false);
 $isLogs      = (strpos($currentScript, 'logs.php') !== false);
-$isSpecies   = (strpos($currentScript, 'species-indicator.php') !== false);
+$isSpecies   = (strpos($currentScript, 'species-indicator.php') !== false || strpos($currentScript, 'Species-indicator.php') !== false);
 
 $dashboardUrl = "/RFP/{$role}/dashboard.php";
 $usersUrl = "/RFP/{$role}/users/index.php";
@@ -43,12 +43,20 @@ if (!empty($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= h($pageTitle) ?></title>
-    <link rel="stylesheet" href="/RFP/assets/css/style.css?v=4">
+    <link rel="stylesheet" href="/RFP/assets/css/style.css?v=5">
     <?= $extraHead ?? '' ?>
 </head>
 <body>
 <nav class="topbar">
-    <div class="topbar-left">
+    <a class="topbar-brand" href="<?= h($dashboardUrl) ?>">
+        <img class="topbar-logo" src="/RFP/assets/img/logo.png" alt="RFP logo">
+        <span class="topbar-brand-text">Reforestation MP</span>
+    </a>
+
+    <input type="checkbox" id="navToggle" class="nav-toggle-checkbox">
+    <label for="navToggle" class="nav-toggle-label" aria-label="Open menu">&#9776;</label>
+
+    <div class="topbar-center">
         <div class="topbar-nav">
             <?php if (in_array($role, ['admin', 'manager', 'user'], true)): ?>
                 <a class="topbar-item <?= $isDashboard ? 'active' : '' ?>" href="<?= h($dashboardUrl) ?>">Dashboard</a>
