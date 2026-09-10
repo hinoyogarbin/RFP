@@ -1,0 +1,177 @@
+/* ==========================================================================
+   Species Indicator — page-specific styles
+   Scoped loosely to avoid clashing with your global style.css
+   ========================================================================== */
+
+/* --- Page heading --- */
+.container-fluid h3 {
+    font-weight: 600;
+    color: #1f3d2b;
+    /* deep green, matches reforestation theme */
+}
+
+/* --- Search input + suggestions dropdown --- */
+#query {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 0.5rem 0.75rem;
+}
+
+#query:focus {
+    border-color: #2e7d32;
+    box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.15);
+}
+
+#suggestions {
+    max-height: 320px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    background: #fff;
+}
+
+#suggestions:empty {
+    border: none;
+    box-shadow: none;
+}
+
+#suggestions .list-group-item {
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    transition: background-color 0.15s ease;
+}
+
+#suggestions .list-group-item:hover {
+    background-color: #f1f8f2;
+}
+
+#suggestions img {
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+/* --- Action buttons --- */
+.btn-success {
+    background-color: #2e7d32;
+    border-color: #2e7d32;
+}
+
+.btn-success:hover {
+    background-color: #256428;
+    border-color: #256428;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #f1f1f1;
+}
+
+/* --- Map --- */
+#map {
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* Keep Leaflet controls above the modal but below dropdown suggestions */
+.leaflet-top,
+.leaflet-bottom {
+    z-index: 500;
+}
+
+/* --- Results panel --- */
+#resultCount {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+#results {
+    scrollbar-width: thin;
+    scrollbar-color: #adb5bd transparent;
+}
+
+#results::-webkit-scrollbar {
+    width: 6px;
+}
+
+#results::-webkit-scrollbar-thumb {
+    background-color: #adb5bd;
+    border-radius: 3px;
+}
+
+/* --- Observation result cards --- */
+#results .card {
+    cursor: pointer;
+    border: 1px solid #e9ecef;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#results .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+#results .card img {
+    min-height: 90px;
+    max-height: 110px;
+}
+
+#results .card-title {
+    font-size: 1rem;
+    font-style: italic;
+    /* scientific names read better italicized */
+    color: #1f3d2b;
+}
+
+#results .card-text {
+    font-size: 0.85rem;
+}
+
+/* --- Pagination row --- */
+#pageInfo {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+/* --- Observation detail modal --- */
+#observationModal .modal-content {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#observationModal .modal-header {
+    background-color: #2e7d32;
+    color: #fff;
+}
+
+#observationModal .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+#modalImage {
+    max-height: 320px;
+    object-fit: cover;
+    width: 100%;
+}
+
+#modalScientificName {
+    font-style: italic;
+}
+
+#modalCommonName {
+    font-size: 1.05rem;
+    color: #1f3d2b;
+}
+
+/* --- Responsive tweaks --- */
+@media (max-width: 768px) {
+    #map {
+        height: 320px !important;
+        margin-bottom: 1rem;
+    }
+
+    #results {
+        max-height: 400px !important;
+    }
+}

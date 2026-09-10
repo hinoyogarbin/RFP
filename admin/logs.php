@@ -204,9 +204,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h1 class="mb-0">Activity Logs</h1>
-    <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#resetLogsModal">
-        Reset All Records
-    </button>
+
 </div>
 
 <?php if (isset($_GET['reset']) && $_GET['reset'] === '1'): ?>
