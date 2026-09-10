@@ -1,4 +1,0 @@
-</main>
-<?= $extraScripts ?? '' ?>
-</body>
-</html>
