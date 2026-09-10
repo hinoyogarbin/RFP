@@ -15,7 +15,7 @@ if (!$photo) {
     exit;
 }
 
-$hasLocation = ($photo['recorded_latitude'] !== null) || ($photo['exif_latitude'] !== null);
+$hasLocation = $photo['exif_latitude'] !== null;
 
 $extraHead = '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" '
     . 'integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">';
@@ -52,26 +52,6 @@ require_once __DIR__ . '/../../includes/header.php';
         <span class="details-label">EXIF GPS Coordinates</span>
         <span class="details-value">
             <?= $photo['exif_latitude'] !== null ? h($photo['exif_latitude'] . ', ' . $photo['exif_longitude']) : 'Not available in photo metadata' ?>
-        </span>
-    </div>
-    <div class="details-row">
-        <span class="details-label">Recorded GPS (marker)</span>
-        <span class="details-value">
-            <?= $photo['recorded_latitude'] !== null ? h($photo['recorded_latitude'] . ', ' . $photo['recorded_longitude']) : 'Not available' ?>
-        </span>
-    </div>
-    <div class="details-row">
-        <span class="details-label">Location Check</span>
-        <span class="details-value">
-            <span class="status-badge location-<?= h($photo['location_match']) ?>">
-                <?php if ($photo['location_match'] === 'match'): ?>
-                    Match &mdash; <?= h((string)$photo['distance_meters']) ?> m apart
-                <?php elseif ($photo['location_match'] === 'mismatch'): ?>
-                    Mismatch &mdash; <?= h((string)$photo['distance_meters']) ?> m apart
-                <?php else: ?>
-                    Unavailable
-                <?php endif; ?>
-            </span>
         </span>
     </div>
     <div class="details-row">
@@ -120,8 +100,8 @@ require_once __DIR__ . '/../../includes/header.php';
 
 <?php
 if ($hasLocation) {
-    $mapLat = $photo['recorded_latitude'] ?? $photo['exif_latitude'];
-    $mapLng = $photo['recorded_longitude'] ?? $photo['exif_longitude'];
+    $mapLat = $photo['exif_latitude'];
+    $mapLng = $photo['exif_longitude'];
     $photoUrl = PHOTO_UPLOAD_URL . $photo['file_name'];
 
     $extraScripts = '<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" '

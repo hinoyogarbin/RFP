@@ -61,7 +61,7 @@ function denyAccess(): void
     <head>
         <meta charset="UTF-8">
         <title>Access Denied</title>
-        <link rel="stylesheet" href="/RFP/assets/css/style.css?v=5">
+        <link rel="stylesheet" href="/RFP/assets/css/style.css?v=8">
     </head>
     <body>
         <div class="denied-box">

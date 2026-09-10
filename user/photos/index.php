@@ -30,7 +30,8 @@ require_once __DIR__ . '/../../includes/header.php';
         <th>Photo</th>
         <th>Taken (EXIF)</th>
         <th>Camera</th>
-       
+        <th>GPS (EXIF)</th>
+        <th>Review Status</th>
         <th>Uploaded</th>
         <th>Actions</th>
     </tr>
@@ -38,7 +39,7 @@ require_once __DIR__ . '/../../includes/header.php';
     <tbody>
     <?php if (empty($photos)): ?>
         <tr>
-            <td colspan="6" class="empty-row">No field photos uploaded yet.</td>
+            <td colspan="7" class="empty-row">No field photos uploaded yet.</td>
         </tr>
     <?php else: ?>
         <?php foreach ($photos as $p): ?>
@@ -50,16 +51,9 @@ require_once __DIR__ . '/../../includes/header.php';
                 </td>
                 <td><?= $p['exif_datetime'] ? h(date('F j, Y g:i A', strtotime($p['exif_datetime']))) : '<span class="hint">Not available</span>' ?></td>
                 <td><?= h(trim(($p['camera_make'] ?? '') . ' ' . ($p['camera_model'] ?? '')) ?: '-') ?></td>
+                <td><?= $p['exif_latitude'] !== null ? h(round($p['exif_latitude'], 5) . ', ' . round($p['exif_longitude'], 5)) : '<span class="hint">Not available</span>' ?></td>
                 <td>
-                    <span class="status-badge location-<?= h($p['location_match']) ?>">
-                        <?php if ($p['location_match'] === 'match'): ?>
-                            Match (<?= h((string)$p['distance_meters']) ?> m)
-                        <?php elseif ($p['location_match'] === 'mismatch'): ?>
-                            Mismatch (<?= h((string)$p['distance_meters']) ?> m)
-                        <?php else: ?>
-                            Unavailable
-                        <?php endif; ?>
-                    </span>
+                    <span class="status-badge review-<?= h($p['status']) ?>"><?= h(ucfirst($p['status'])) ?></span>
                 </td>
                 <td><?= h(date('F j, Y g:i A', strtotime($p['uploaded_at']))) ?></td>
                 <td class="actions-cell">

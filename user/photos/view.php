@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../includes/user_functions.php';
 require_once __DIR__ . '/../../includes/photo_functions.php';
 
 $photoId = (int)($_GET['id'] ?? 0);
-$photo = $photoId ? findFieldPhotoById($photoId) : null;
+$photo = $photoId ? findFieldPhotoWithNamesById($photoId) : null;
 
 // Users may only view their own photos.
 if (!$photo || (int)$photo['user_id'] !== (int)$_SESSION['user_id']) {
@@ -16,7 +16,7 @@ if (!$photo || (int)$photo['user_id'] !== (int)$_SESSION['user_id']) {
     exit;
 }
 
-$hasBothPoints = $photo['recorded_latitude'] !== null && $photo['exif_latitude'] !== null;
+$hasLocation = $photo['exif_latitude'] !== null;
 
 $extraHead = '<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" '
     . 'integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">';
@@ -52,19 +52,27 @@ require_once __DIR__ . '/../../includes/header.php';
         </span>
     </div>
     <div class="details-row">
-        <span class="details-label">Recorded GPS (at upload)</span>
+        <span class="details-label">Review Status</span>
         <span class="details-value">
-            <?= $photo['recorded_latitude'] !== null ? h($photo['recorded_latitude'] . ', ' . $photo['recorded_longitude']) : 'Not available (location permission denied or unsupported)' ?>
+            <span class="status-badge review-<?= h($photo['status']) ?>"><?= h(ucfirst($photo['status'])) ?></span>
+            <?php if ($photo['status'] !== 'pending'): ?>
+                &mdash; by <?= h($photo['reviewer_name'] ?? 'Unknown') ?> on <?= h(date('F j, Y g:i A', strtotime($photo['reviewed_at']))) ?>
+            <?php endif; ?>
         </span>
     </div>
-    
+    <?php if (!empty($photo['review_notes'])): ?>
+        <div class="details-row">
+            <span class="details-label">Reviewer Notes</span>
+            <span class="details-value"><?= h($photo['review_notes']) ?></span>
+        </div>
+    <?php endif; ?>
 </div>
 
-<?php if ($hasBothPoints): ?>
+<?php if ($hasLocation): ?>
     <div class="dashboard-map-section">
-        
-        
-        <div id="compare-map" class="dashboard-map"></div>
+        <h2>Photo Location</h2>
+        <p class="dashboard-map-caption">Click the marker to view the photo.</p>
+        <div id="photo-location-map" class="dashboard-map"></div>
     </div>
 <?php endif; ?>
 
@@ -73,31 +81,22 @@ require_once __DIR__ . '/../../includes/header.php';
 </div>
 
 <?php
-if ($hasBothPoints) {
-    $exifLat = (float)$photo['exif_latitude'];
-    $exifLng = (float)$photo['exif_longitude'];
-    $recLat = (float)$photo['recorded_latitude'];
-    $recLng = (float)$photo['recorded_longitude'];
-    $midLat = ($exifLat + $recLat) / 2;
-    $midLng = ($exifLng + $recLng) / 2;
+if ($hasLocation) {
+    $mapLat = $photo['exif_latitude'];
+    $mapLng = $photo['exif_longitude'];
+    $photoUrl = PHOTO_UPLOAD_URL . $photo['file_name'];
 
     $extraScripts = '<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" '
         . 'integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>'
         . '<script>
-            var map = L.map("compare-map").setView([' . $midLat . ', ' . $midLng . '], 16);
+            var map = L.map("photo-location-map").setView([' . (float)$mapLat . ', ' . (float)$mapLng . '], 17);
             L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
                 maxZoom: 19,
                 attribution: "&copy; OpenStreetMap contributors"
             }).addTo(map);
 
-            var exifIcon = L.divIcon({className: "gps-marker gps-marker-exif"});
-            var recordedIcon = L.divIcon({className: "gps-marker gps-marker-recorded"});
-
-            L.marker([' . $exifLat . ', ' . $exifLng . '], ).addTo(map)
-                .bindPopup("EXIF GPS (from photo)");
-
-            var bounds = L.latLngBounds([[' . $exifLat . ',' . $exifLng . '],[' . $recLat . ',' . $recLng . ']]);
-            map.fitBounds(bounds.pad(0.5));
+            var marker = L.marker([' . (float)$mapLat . ', ' . (float)$mapLng . ']).addTo(map);
+            marker.bindPopup(' . json_encode('<img src="' . $photoUrl . '" alt="Field photo" style="width:220px;height:auto;display:block;">') . ');
         </script>';
 }
 require_once __DIR__ . '/../../includes/page_end.php';

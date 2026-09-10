@@ -4,13 +4,12 @@
  *
  * Handles saving an uploaded field photograph, extracting its EXIF
  * metadata (GPS coordinates, capture date/time, camera make/model),
- * comparing the EXIF GPS position against the device's recorded GPS
- * position at time of upload, and reading back stored photo records.
+ * and reading back stored photo records.
  *
  * Requires: config/database.php (getDbConnection())
  * Requires the PHP `exif` extension to be enabled (uncomment
  * `extension=exif` in php.ini for XAMPP) — without it, EXIF fields
- * are simply left null and location_match is 'unavailable'.
+ * are simply left null.
  */
 
 require_once __DIR__ . '/../config/database.php';
@@ -20,19 +19,31 @@ const PHOTO_UPLOAD_URL   = '/RFP/uploads/field_photos/';
 const PHOTO_MAX_BYTES    = 8 * 1024 * 1024; // 8 MB
 const PHOTO_ALLOWED_MIME = ['image/jpeg' => 'jpg', 'image/png' => 'png'];
 
-// A photo's EXIF GPS position and the device's recorded GPS position
-// are considered a "match" if they're within this many meters of
-// each other (accounts for normal GPS drift on phones/cameras).
-const PHOTO_LOCATION_MATCH_THRESHOLD_METERS = 75;
-
 /**
  * Handles a full photo upload: validates the file, moves it into
- * storage, extracts EXIF metadata, compares GPS positions, and
- * inserts the record. Returns the new photo_id on success.
+ * storage, resolves EXIF metadata, and inserts the record. Returns
+ * the new photo_id on success.
+ *
+ * $clientExif holds whatever the browser already parsed out of the
+ * file's EXIF data (see the EXIF.js reader in user/photos/upload.php)
+ * and posted alongside it as
+ * exif_latitude/exif_longitude/exif_datetime/exif_make/exif_model.
+ * It's untrusted input like any other POST field, so every field is
+ * validated and range-checked before use, never inserted as-is.
+ *
+ * Server-side exif_read_data() is the preferred source, since it reads
+ * the file we actually stored rather than trusting the browser. But it
+ * sometimes can't retrieve GPS data that a browser-side reader can (for
+ * example, some mobile share/gallery pickers strip or reformat EXIF in
+ * ways exif_read_data() chokes on but a JS parser handles fine). So the
+ * two sources are merged per field: for each of latitude/longitude/
+ * datetime/make/model, the server-side value is used when present, and
+ * the client-side value fills in only the fields the server came back
+ * null on.
  *
  * @throws RuntimeException on validation or filesystem failure.
  */
-function saveFieldPhotoUpload(int $userId, array $file, ?float $recordedLat, ?float $recordedLng): int
+function saveFieldPhotoUpload(int $userId, array $file, array $clientExif = []): int
 {
     validatePhotoUpload($file);
 
@@ -49,44 +60,47 @@ function saveFieldPhotoUpload(int $userId, array $file, ?float $recordedLat, ?fl
     }
 
     $exif = extractPhotoExif($destination);
+    $clientSanitized = sanitizeClientExif($clientExif);
 
-    $distance = null;
-    $locationMatch = 'unavailable';
-    if ($recordedLat !== null && $recordedLng !== null && $exif['latitude'] !== null && $exif['longitude'] !== null) {
-        $distance = haversineDistanceMeters($recordedLat, $recordedLng, $exif['latitude'], $exif['longitude']);
-        $locationMatch = ($distance <= PHOTO_LOCATION_MATCH_THRESHOLD_METERS) ? 'match' : 'mismatch';
+    // Latitude and longitude are always taken from the same source
+    // together, so a server lat paired with a client lng (or vice
+    // versa) can never happen.
+    if ($exif['latitude'] === null && $exif['longitude'] === null) {
+        $exif['latitude'] = $clientSanitized['latitude'];
+        $exif['longitude'] = $clientSanitized['longitude'];
+    }
+    if ($exif['datetime'] === null) {
+        $exif['datetime'] = $clientSanitized['datetime'];
+    }
+    if ($exif['make'] === null) {
+        $exif['make'] = $clientSanitized['make'];
+    }
+    if ($exif['model'] === null) {
+        $exif['model'] = $clientSanitized['model'];
     }
 
     $pdo = getDbConnection();
     $stmt = $pdo->prepare(
         'INSERT INTO field_photos
             (user_id, file_name, original_name, file_size,
-             recorded_latitude, recorded_longitude,
              exif_latitude, exif_longitude, exif_datetime,
-             camera_make, camera_model,
-             distance_meters, location_match)
+             camera_make, camera_model)
          VALUES
             (:user_id, :file_name, :original_name, :file_size,
-             :recorded_lat, :recorded_lng,
              :exif_lat, :exif_lng, :exif_datetime,
-             :camera_make, :camera_model,
-             :distance, :location_match)'
+             :camera_make, :camera_model)'
     );
 
     $stmt->execute([
-        'user_id'        => $userId,
-        'file_name'      => $storedName,
-        'original_name'  => $file['name'],
-        'file_size'      => $file['size'],
-        'recorded_lat'   => $recordedLat,
-        'recorded_lng'   => $recordedLng,
-        'exif_lat'       => $exif['latitude'],
-        'exif_lng'       => $exif['longitude'],
-        'exif_datetime'  => $exif['datetime'],
-        'camera_make'    => $exif['make'],
-        'camera_model'   => $exif['model'],
-        'distance'       => $distance,
-        'location_match' => $locationMatch,
+        'user_id'       => $userId,
+        'file_name'     => $storedName,
+        'original_name' => $file['name'],
+        'file_size'     => $file['size'],
+        'exif_lat'      => $exif['latitude'],
+        'exif_lng'      => $exif['longitude'],
+        'exif_datetime' => $exif['datetime'],
+        'camera_make'   => $exif['make'],
+        'camera_model'  => $exif['model'],
     ]);
 
     return (int)$pdo->lastInsertId();
@@ -112,9 +126,64 @@ function validatePhotoUpload(array $file): void
 }
 
 /**
+ * Validates the EXIF fields the browser posted alongside the upload.
+ *
+ * Always returns a well-formed exif array (same shape as
+ * extractPhotoExif()): any field that's missing, malformed, or out of
+ * range is simply left null rather than trusted. This is untrusted
+ * client input like any other POST field — nothing here is inserted
+ * as-is; saveFieldPhotoUpload() only uses a given field from this
+ * result when the server-side extraction came back null for it.
+ */
+function sanitizeClientExif(array $clientExif): array
+{
+    $result = [
+        'latitude'  => null,
+        'longitude' => null,
+        'datetime'  => null,
+        'make'      => null,
+        'model'     => null,
+    ];
+
+    $lat = trim((string)($clientExif['latitude'] ?? ''));
+    $lng = trim((string)($clientExif['longitude'] ?? ''));
+    if ($lat !== '' && $lng !== '' && is_numeric($lat) && is_numeric($lng)) {
+        $latF = (float)$lat;
+        $lngF = (float)$lng;
+        if ($latF >= -90 && $latF <= 90 && $lngF >= -180 && $lngF <= 180) {
+            $result['latitude'] = round($latF, 7);
+            $result['longitude'] = round($lngF, 7);
+        }
+    }
+
+    $rawDateTime = trim((string)($clientExif['datetime'] ?? ''));
+    if ($rawDateTime !== '') {
+        $parsed = DateTime::createFromFormat('Y:m:d H:i:s', $rawDateTime);
+        if ($parsed) {
+            $result['datetime'] = $parsed->format('Y-m-d H:i:s');
+        }
+    }
+
+    $make = trim((string)($clientExif['make'] ?? ''));
+    if ($make !== '') {
+        $result['make'] = mb_substr($make, 0, 100);
+    }
+
+    $model = trim((string)($clientExif['model'] ?? ''));
+    if ($model !== '') {
+        $result['model'] = mb_substr($model, 0, 100);
+    }
+
+    return $result;
+}
+
+/**
  * Extracts GPS coordinates, capture date/time, and camera make/model
  * from a JPEG's EXIF data. Returns nulls for any field that isn't
  * present (e.g. PNGs, or photos with GPS/location services off).
+ *
+ * This is the server-side fallback path, used when the browser didn't
+ * (or couldn't) supply pre-parsed EXIF fields — see saveFieldPhotoUpload().
  */
 function extractPhotoExif(string $filePath): array
 {
@@ -192,23 +261,6 @@ function exifFractionToFloat(string $fraction): float
 }
 
 /**
- * Great-circle distance between two lat/lng points, in meters.
- */
-function haversineDistanceMeters(float $lat1, float $lng1, float $lat2, float $lng2): float
-{
-    $earthRadius = 6371000; // meters
-
-    $dLat = deg2rad($lat2 - $lat1);
-    $dLng = deg2rad($lng2 - $lng1);
-
-    $a = sin($dLat / 2) ** 2
-        + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLng / 2) ** 2;
-    $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-
-    return round($earthRadius * $c, 2);
-}
-
-/**
  * Fetches all field photos uploaded by a given user, most recent first.
  */
 function getFieldPhotosByUser(int $userId): array
@@ -229,6 +281,76 @@ function findFieldPhotoById(int $photoId): ?array
     $stmt->execute(['id' => $photoId]);
     $photo = $stmt->fetch();
     return $photo ?: null;
+}
+
+/**
+ * Fetches every field photo across all users, newest first, with the
+ * uploader's and reviewer's names joined in. Used by the Admin/Manager
+ * review screens. Optionally filtered to a single status.
+ */
+function getAllFieldPhotos(?string $statusFilter = null): array
+{
+    $pdo = getDbConnection();
+
+    $sql = 'SELECT fp.*, u.full_name AS uploader_name, u.username AS uploader_username,
+                   r.full_name AS reviewer_name
+            FROM field_photos fp
+            JOIN users u ON u.user_id = fp.user_id
+            LEFT JOIN users r ON r.user_id = fp.reviewed_by';
+
+    $params = [];
+    if ($statusFilter !== null && $statusFilter !== '') {
+        $sql .= ' WHERE fp.status = :status';
+        $params['status'] = $statusFilter;
+    }
+    $sql .= ' ORDER BY fp.uploaded_at DESC';
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll();
+}
+
+/**
+ * Fetches a single field photo by ID, with the uploader's and
+ * reviewer's names joined in. Returns null if not found.
+ */
+function findFieldPhotoWithNamesById(int $photoId): ?array
+{
+    $pdo = getDbConnection();
+    $stmt = $pdo->prepare(
+        'SELECT fp.*, u.full_name AS uploader_name, u.username AS uploader_username,
+                r.full_name AS reviewer_name
+         FROM field_photos fp
+         JOIN users u ON u.user_id = fp.user_id
+         LEFT JOIN users r ON r.user_id = fp.reviewed_by
+         WHERE fp.photo_id = :id'
+    );
+    $stmt->execute(['id' => $photoId]);
+    $photo = $stmt->fetch();
+    return $photo ?: null;
+}
+
+/**
+ * Records an Admin/Manager's confirm or reject decision on a photo.
+ */
+function reviewFieldPhoto(int $photoId, string $decision, int $reviewerId, ?string $notes): void
+{
+    if (!in_array($decision, ['confirmed', 'rejected'], true)) {
+        throw new InvalidArgumentException('Invalid review decision.');
+    }
+
+    $pdo = getDbConnection();
+    $stmt = $pdo->prepare(
+        'UPDATE field_photos
+         SET status = :status, reviewed_by = :reviewer, reviewed_at = NOW(), review_notes = :notes
+         WHERE photo_id = :id'
+    );
+    $stmt->execute([
+        'status'   => $decision,
+        'reviewer' => $reviewerId,
+        'notes'    => ($notes !== null && $notes !== '') ? $notes : null,
+        'id'       => $photoId,
+    ]);
 }
 
 /**

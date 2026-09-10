@@ -39,7 +39,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <th>Photo</th>
         <th>Submitted By</th>
         <th>Taken (EXIF)</th>
-        <th>Location Check</th>
+        <th>GPS (EXIF)</th>
         <th>Review Status</th>
         <th>Uploaded</th>
         <th>Actions</th>
@@ -60,17 +60,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 </td>
                 <td><?= h($p['uploader_name']) ?> (<?= h($p['uploader_username']) ?>)</td>
                 <td><?= $p['exif_datetime'] ? h(date('F j, Y g:i A', strtotime($p['exif_datetime']))) : '<span class="hint">Not available</span>' ?></td>
-                <td>
-                    <span class="status-badge location-<?= h($p['location_match']) ?>">
-                        <?php if ($p['location_match'] === 'match'): ?>
-                            Match (<?= h((string)$p['distance_meters']) ?> m)
-                        <?php elseif ($p['location_match'] === 'mismatch'): ?>
-                            Mismatch (<?= h((string)$p['distance_meters']) ?> m)
-                        <?php else: ?>
-                            Unavailable
-                        <?php endif; ?>
-                    </span>
-                </td>
+                <td><?= $p['exif_latitude'] !== null ? h(round($p['exif_latitude'], 5) . ', ' . round($p['exif_longitude'], 5)) : '<span class="hint">Not available</span>' ?></td>
                 <td>
                     <span class="status-badge review-<?= h($p['status']) ?>"><?= h(ucfirst($p['status'])) ?></span>
                 </td>
