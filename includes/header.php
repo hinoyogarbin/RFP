@@ -50,7 +50,7 @@ if (!empty($_SESSION['user_id'])) {
 <nav class="topbar">
     <a class="topbar-brand" href="<?= h($dashboardUrl) ?>">
         <img class="topbar-logo" src="/RFP/assets/img/logo.png" alt="RFP logo">
-        <span class="topbar-brand-text">Reforestation MP</span>
+      
     </a>
 
     <input type="checkbox" id="navToggle" class="nav-toggle-checkbox">

@@ -1,0 +1,146 @@
+  :root {
+      --forest: #1B5E3A;
+      --forest-dark: #144a2e;
+      --white: #ffffff;
+      --charcoal: #333333;
+      --charcoal-light: #6b6b6b;
+      --nav-bg: rgba(255, 255, 255, 0.96);
+  }
+
+  * {
+      box-sizing: border-box;
+  }
+
+  body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 16px;
+      background: #f4f6f5;
+      color: var(--charcoal);
+      padding-bottom: 90px;
+      /* keep content clear of the floating nav */
+  }
+
+  /* ---------------------------------------------
+     Demo page content — remove in real integration
+  --------------------------------------------- */
+  .demo-content {
+      padding: 24px 20px;
+      max-width: 700px;
+      margin: 0 auto;
+  }
+
+  .demo-content h1 {
+      color: var(--forest);
+      font-size: 1.4rem;
+  }
+
+  .demo-content p {
+      color: var(--charcoal-light);
+      line-height: 1.5;
+  }
+
+  /* ===============================================
+     BOTTOM NAV — Mobile & Tablet ONLY
+     Hidden entirely above 1024px (desktop keeps
+     your existing sidebar/topbar nav)
+  =============================================== */
+  .bottom-nav {
+      display: none;
+      /* desktop default: hidden */
+  }
+
+  @media (max-width: 1024px) {
+      .bottom-nav {
+          display: flex;
+          position: fixed;
+          left: 50%;
+          bottom: 16px;
+          transform: translateX(-50%);
+          width: calc(100% - 32px);
+          max-width: 420px;
+          background: var(--nav-bg);
+          backdrop-filter: blur(10px);
+          border-radius: 28px;
+          box-shadow: 0 8px 24px rgba(27, 94, 58, 0.18), 0 2px 6px rgba(0, 0, 0, 0.06);
+          padding: 8px;
+          justify-content: space-between;
+          align-items: center;
+          z-index: 999;
+      }
+
+      .bottom-nav a {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 3px;
+          text-decoration: none;
+          color: var(--charcoal-light);
+          min-width: 44px;
+          min-height: 44px;
+          padding: 6px 4px;
+          border-radius: 20px;
+          transition: background-color .25s ease, color .25s ease, transform .15s ease;
+          -webkit-tap-highlight-color: transparent;
+      }
+
+      .bottom-nav a svg {
+          width: 22px;
+          height: 22px;
+          stroke: currentColor;
+          fill: none;
+          stroke-width: 1.8;
+          transition: stroke .25s ease;
+      }
+
+      .bottom-nav a span {
+          font-size: 11px;
+          font-weight: 500;
+          line-height: 1;
+      }
+
+      /* Active state — forest green pill highlight */
+      .bottom-nav a.active {
+          background: var(--forest);
+          color: var(--white);
+          box-shadow: 0 4px 10px rgba(27, 94, 58, 0.35);
+      }
+
+      .bottom-nav a.active svg {
+          stroke: var(--white);
+      }
+
+      /* Tap feedback */
+      .bottom-nav a:active {
+          transform: scale(0.94);
+      }
+
+      /* On non-active items, a light tap/hover tint */
+      .bottom-nav a:not(.active):hover {
+          background: rgba(27, 94, 58, 0.08);
+          color: var(--forest);
+      }
+
+      .bottom-nav a:not(.active):hover svg {
+          stroke: var(--forest);
+      }
+  }
+
+  /* Slightly larger sizing on tablets (601px–1024px) */
+  @media (min-width: 601px) and (max-width: 1024px) {
+      .bottom-nav {
+          max-width: 480px;
+          padding: 10px;
+      }
+
+      .bottom-nav a svg {
+          width: 24px;
+          height: 24px;
+      }
+
+      .bottom-nav a span {
+          font-size: 12px;
+      }
+  }
