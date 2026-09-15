@@ -55,6 +55,24 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
   </div>
 </div>
+<nav class="bottom-nav" aria-label="Primary mobile navigation">
+    <a href="/RFP/user/user.php" class="<?= $isHome ? 'active' : '' ?>">
+        <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+        <span>Home</span>
+    </a>
+    <a href="/RFP/user/Species-indicator.php" class="<?= $isSpecies ? 'active' : '' ?>">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <span>Species</span>
+    </a>
+    <a href="/RFP/user/lineplotter.php" class="<?= $isLinePlotter ? 'active' : '' ?>">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>
+        <span>Line plotter</span>
+    </a>
+    <a href="/RFP/user/profile.php" class="<?= $isProfile ? 'active' : '' ?>">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+        <span>Profile</span>
+    </a>
+</nav>
 
 <!-- Leaflet + MarkerCluster (CDN) -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -62,6 +80,7 @@ require_once __DIR__ . '/../includes/header.php';
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<link rel="stylesheet" href="/RFP/assets/css/user.css">
 
 <script src="/RFP/assets/js/SpeciesAPI.js"></script>
 

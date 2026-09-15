@@ -43,9 +43,9 @@ require_once __DIR__ . '/../includes/header.php';
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
         <span>Species</span>
     </a>
-    <a href="/RFP/user/reports.php" class="<?= $isReports ? 'active' : '' ?>">
+    <a href="/RFP/user/lineplotter.php" class="<?= $isLinePlotter ? 'active' : '' ?>">
         <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>
-        <span>Reports</span>
+        <span>Line plotter</span>
     </a>
     <a href="/RFP/user/profile.php" class="<?= $isProfile ? 'active' : '' ?>">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>

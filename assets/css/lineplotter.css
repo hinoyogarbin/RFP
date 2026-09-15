@@ -1,0 +1,361 @@
+/*
+ * assets/css/photo-plotter.css
+ *
+ * Scoped styles for user/Photo-plotter.php.
+ * All selectors are prefixed with "pp-" so this file can't collide
+ * with global style.css rules.
+ *
+ * Palette matches the site's global design system:
+ *   Deep forest green : #1B5E3A
+ *   White              : #FFFFFF
+ *   Charcoal gray      : #333333
+ *
+ * If your global style.css already defines CSS variables for these
+ * (e.g. --forest-green, --charcoal), swap the values below for
+ * var(--forest-green, #1B5E3A) so this page inherits any future
+ * palette tweaks automatically.
+ */
+
+.pp-page {
+    --pp-green: #1B5E3A;
+    --pp-green-dark: #144a2d;
+    --pp-white: #FFFFFF;
+    --pp-charcoal: #333333;
+    --pp-border: #dfe3e0;
+    --pp-bg-soft: #f5f7f6;
+    --pp-danger: #b3261e;
+    --pp-radius: 10px;
+
+    font-size: 16px;
+    color: var(--pp-charcoal);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+.pp-header {
+    margin-bottom: 20px;
+}
+
+.pp-title {
+    margin: 0 0 4px 0;
+    font-size: 1.5rem;
+    color: var(--pp-green);
+}
+
+.pp-subtitle {
+    margin: 0;
+    color: #6b6f6d;
+    font-size: 0.95rem;
+}
+
+.pp-h2 {
+    font-size: 1.05rem;
+    margin: 0;
+    color: var(--pp-charcoal);
+}
+
+/* ---------------------------------------------------------
+   Layout - stacked on mobile, two columns from tablet up
+--------------------------------------------------------- */
+
+.pp-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media (min-width: 768px) {
+    .pp-layout {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .pp-panel {
+        flex: 0 0 34%;
+    }
+
+    .pp-panel-map {
+        flex: 1 1 auto;
+        position: sticky;
+        top: 16px;
+    }
+}
+
+.pp-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ---------------------------------------------------------
+   Cards / boxes
+--------------------------------------------------------- */
+
+.pp-card {
+    background: var(--pp-white);
+    border: 1px solid var(--pp-border);
+    border-radius: var(--pp-radius);
+    padding: 20px;
+}
+
+.pp-upload-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+}
+
+.pp-info-box {
+    background: var(--pp-bg-soft);
+    border: 1px solid var(--pp-border);
+    border-radius: var(--pp-radius);
+    padding: 12px 16px;
+}
+
+.pp-info-box strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--pp-green);
+    font-size: 0.9rem;
+}
+
+/* ---------------------------------------------------------
+   Buttons - 44px minimum touch target
+--------------------------------------------------------- */
+
+.pp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.pp-btn-primary {
+    background: var(--pp-green);
+    color: var(--pp-white);
+}
+
+.pp-btn-primary:hover {
+    background: var(--pp-green-dark);
+}
+
+.pp-btn-outline {
+    background: var(--pp-white);
+    color: var(--pp-green);
+    border-color: var(--pp-green);
+}
+
+.pp-btn-outline:hover {
+    background: var(--pp-bg-soft);
+}
+
+.pp-btn-danger {
+    background: var(--pp-white);
+    color: var(--pp-danger);
+    border-color: var(--pp-danger);
+}
+
+.pp-btn-danger:hover {
+    background: #fdf0ef;
+}
+
+.pp-icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.pp-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+}
+
+/* ---------------------------------------------------------
+   Loading spinner
+--------------------------------------------------------- */
+
+.pp-loading {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    color: #6b6f6d;
+    font-size: 0.9rem;
+}
+
+.pp-loading.is-active {
+    display: flex;
+}
+
+.pp-spinner {
+    width: 18px;
+    height: 18px;
+    border: 3px solid var(--pp-border);
+    border-top-color: var(--pp-green);
+    border-radius: 50%;
+    animation: pp-spin 0.8s linear infinite;
+}
+
+@keyframes pp-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ---------------------------------------------------------
+   Status alert
+--------------------------------------------------------- */
+
+.pp-alert {
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    border: 1px solid transparent;
+}
+
+.pp-alert-success {
+    background: #eaf6ee;
+    border-color: #bfe3ca;
+    color: var(--pp-green-dark);
+}
+
+.pp-alert-warning {
+    background: #fff8e6;
+    border-color: #f2dca0;
+    color: #7a5b00;
+}
+
+.pp-alert-danger {
+    background: #fdf0ef;
+    border-color: #f0bdb9;
+    color: var(--pp-danger);
+}
+
+/* ---------------------------------------------------------
+   Gallery
+--------------------------------------------------------- */
+
+.pp-gallery-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pp-badge {
+    background: var(--pp-green);
+    color: var(--pp-white);
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.pp-gallery {
+    max-height: 500px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pp-empty-gallery {
+    text-align: center;
+    color: #8a8e8b;
+    padding: 30px 10px;
+}
+
+.pp-empty-icon {
+    font-size: 1.8rem;
+    margin-bottom: 6px;
+}
+
+.pp-photo-card {
+    display: flex;
+    border: 1px solid var(--pp-border);
+    border-radius: var(--pp-radius);
+    background: var(--pp-white);
+    overflow: hidden;
+    cursor: pointer;
+    min-height: 44px;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.pp-photo-card:hover {
+    border-color: var(--pp-green);
+    background: var(--pp-bg-soft);
+}
+
+.pp-photo-card.is-active {
+    border-color: var(--pp-green);
+    background: #eaf6ee;
+}
+
+.pp-photo-card img {
+    width: 40%;
+    min-width: 90px;
+    height: 100px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.pp-photo-card-content {
+    padding: 10px;
+    overflow: hidden;
+}
+
+.pp-photo-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pp-photo-info {
+    font-size: 0.78rem;
+    color: #6b6f6d;
+    line-height: 1.4;
+}
+
+/* ---------------------------------------------------------
+   Map
+--------------------------------------------------------- */
+
+.pp-map-controls {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.pp-map {
+    width: 100%;
+    height: 450px;
+    border-radius: var(--pp-radius);
+    border: 1px solid var(--pp-border);
+}
+
+@media (min-width: 768px) {
+    .pp-map {
+        height: 600px;
+    }
+}
+
+/* Leaflet popup content re-styled to match palette */
+.pp-popup strong {
+    color: var(--pp-green);
+}

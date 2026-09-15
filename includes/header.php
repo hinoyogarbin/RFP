@@ -67,6 +67,9 @@ if (!empty($_SESSION['user_id'])) {
             <?php if (in_array($role, ['admin', 'manager'], true)): ?>
                 <a class="topbar-item <?= $isSpecies ? 'active' : '' ?>" href="<?= h($speciesUrl) ?>">Species Indicator</a>
             <?php endif; ?>
+             <?php if (in_array($role, ['user'], true)): ?>
+                <a class="topbar-item <?= $isLinePlotter ? 'active' : '' ?>" href="<?= h($linePlotterUrl) ?>">Line Plotter</a>
+            <?php endif; ?>
             <?php if ($role === 'admin'): ?>
                 <a class="topbar-item <?= $isLogs ? 'active' : '' ?>" href="<?= h($logsUrl) ?>">Activity Logs</a>
             <?php endif; ?>
