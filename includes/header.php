@@ -49,7 +49,7 @@ if (!empty($_SESSION['user_id'])) {
 <body>
 <nav class="topbar">
     <a class="topbar-brand" href="<?= h($dashboardUrl) ?>">
-        <img class="topbar-logo" src="/RFP/assets/img/logo.png" alt="RFP logo">
+        <img class="topbar-logo" src="/RFP/assets/Logo.png" alt="RFP Logo">
       
     </a>
 

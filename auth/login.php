@@ -27,6 +27,8 @@ unset($_SESSION['old_username']);
 <body>
 <main class="login-main">
     <div class="login-box">
+        <img class="login-logo" src="/RFP/assets/Logo.png" alt="RFP Logo"
+     style="display:block; max-width:120px; width:100%; height:auto; margin:0 auto 15px;">
         <h1>Reforestation Management Platform</h1>
         <h2>Login</h2>
 
