@@ -22,7 +22,7 @@ unset($_SESSION['old_username']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Reforestation Management Platform</title>
-    <link rel="stylesheet" href="/RFP/assets/css/style.css?v=4">
+    <link rel="stylesheet" href="/RFP/assets/css/style.css?">
 </head>
 <body>
 <main class="login-main">
@@ -40,12 +40,34 @@ unset($_SESSION['old_username']);
             <label for="username">Username</label>
             <input type="text" id="username" name="username" value="<?= h($oldUsername) ?>" required autofocus>
 
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
+                       <label for="password">Password</label>
+            <div class="password-wrapper">
+                <input type="password" id="password" name="password" required>
+                <span class="toggle-password" onclick="togglePassword()">
+                    <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </span>
+            </div>
 
             <button type="submit" class="btn btn-primary login-submit">Login</button>
         </form>
     </div>
 </main>
+<script>
+function togglePassword() {
+    const input = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.innerHTML = '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+        input.type = 'password';
+        icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+}
+</script>
 </body>
 </html>

@@ -779,6 +779,35 @@ select:focus-visible,
     color: var(--color-text-muted);
 }
 
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 44px;
+    min-height: 44px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+}
+
+.toggle-password:hover {
+    color: var(--color-primary);
+}
+
 /* ---------- Card ---------- */
 /* Generic content panel - used to group a section (map, table, form)
    so the page reads as distinct blocks instead of a flat wall of
