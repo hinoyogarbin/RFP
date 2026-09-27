@@ -293,43 +293,6 @@ a {
     color: #a13333;
 }
 
-.review-pending {
-    background-color: #fdf3d8;
-    border-color: #a17f1a;
-    color: #8a6a12;
-}
-
-.review-confirmed {
-    background-color: #e6f4ea;
-    border-color: #1a5c2e;
-    color: #1a5c2e;
-}
-
-.review-rejected {
-    background-color: #f4e6e6;
-    border-color: #a13333;
-    color: #a13333;
-}
-
-/* ---------- Field Photos ---------- */
-
-.photo-thumb {
-    width: 64px;
-    height: 64px;
-    object-fit: cover;
-    border: 1px solid #cccccc;
-    display: block;
-}
-
-.photo-full {
-    max-width: 100%;
-    width: 480px;
-    height: auto;
-    border: 1px solid #cccccc;
-    display: block;
-    margin-bottom: 16px;
-}
-
 /* ---------- Details view ---------- */
 
 .details-box {
@@ -416,4 +379,89 @@ a {
     height: 380px;
     width: 100%;
     border: 1px solid #cccccc;
+}
+
+/* ---------- CENRO Polygon Management ---------- */
+
+.alert-warning {
+    background-color: #fdf4e3;
+    border-color: #a1601a;
+    color: #7a4712;
+}
+
+.alert-info {
+    background-color: #eef2f7;
+    border-color: #1f4e79;
+    color: #1f4e79;
+}
+
+.status-completed {
+    background-color: #eef2f7;
+    border-color: #1f4e79;
+    color: #1f4e79;
+}
+
+/* Import form needs to be wider than the standard 420px account forms,
+   because it carries a file picker and a multi-column polygon table. */
+.form.form-wide {
+    max-width: 100%;
+}
+
+.form input[type="file"],
+.form textarea {
+    padding: 8px;
+    border: 1px solid #999999;
+    background-color: #ffffff;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.form textarea {
+    resize: vertical;
+}
+
+.form .data-table input[type="text"] {
+    padding: 5px;
+    border: 1px solid #999999;
+    font-family: inherit;
+    font-size: 13px;
+    width: 100%;
+    min-width: 110px;
+}
+
+.form h2 {
+    font-size: 16px;
+    margin-top: 26px;
+    margin-bottom: 6px;
+}
+
+.info-box {
+    border: 1px solid #cccccc;
+    background-color: #fafafa;
+    padding: 12px 14px;
+    margin-top: 16px;
+}
+
+.info-box h3 {
+    font-size: 14px;
+    margin: 0 0 8px 0;
+}
+
+.info-box p {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+}
+
+.info-box p:last-child {
+    margin-bottom: 0;
+}
+
+/* Leaflet popup contents for a polygon. */
+.map-popup {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.map-popup div {
+    white-space: nowrap;
 }

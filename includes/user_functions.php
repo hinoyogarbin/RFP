@@ -61,8 +61,13 @@ function getUsersList(array $roleScope, string $search = '', string $roleFilter 
     }
 
     if ($search !== '') {
-        $conditions[] = '(full_name LIKE :search OR username LIKE :search)';
-        $params['search'] = '%' . $search . '%';
+        // Native prepared statements (ATTR_EMULATE_PREPARES => false) do not
+        // allow the same named placeholder to appear more than once, so each
+        // LIKE gets its own parameter. Reusing :search here caused the search
+        // box to fail with "Invalid parameter number".
+        $conditions[] = '(full_name LIKE :search_name OR username LIKE :search_username)';
+        $params['search_name'] = '%' . $search . '%';
+        $params['search_username'] = '%' . $search . '%';
     }
 
     if ($roleFilter !== '' && in_array($roleFilter, VALID_ROLES, true)) {

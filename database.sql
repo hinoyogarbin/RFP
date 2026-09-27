@@ -62,39 +62,3 @@ CREATE TABLE activity_logs (
     INDEX idx_status (status),
     INDEX idx_created_at (created_at)
 );
-
--- ============================================================
--- Field Photos
--- Photos captured/uploaded by field operators (User role).
--- GPS coordinates, capture date/time, and camera make/model are
--- extracted automatically from each photo's EXIF metadata on
--- upload. Every upload starts pending until an Admin or Manager
--- confirms or rejects it.
--- ============================================================
-CREATE TABLE field_photos (
-    photo_id       INT AUTO_INCREMENT PRIMARY KEY,
-    user_id        INT NOT NULL,
-    file_name      VARCHAR(255) NOT NULL,
-    original_name  VARCHAR(255) NOT NULL,
-    file_size      INT NOT NULL,
-
-    exif_latitude  DECIMAL(10,7) NULL,
-    exif_longitude DECIMAL(10,7) NULL,
-    exif_datetime  DATETIME NULL,
-    camera_make    VARCHAR(100) NULL,
-    camera_model   VARCHAR(100) NULL,
-
-    status         ENUM('pending', 'confirmed', 'rejected') NOT NULL DEFAULT 'pending',
-    reviewed_by    INT NULL,
-    reviewed_at    TIMESTAMP NULL,
-    review_notes   VARCHAR(255) NULL,
-
-    uploaded_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (reviewed_by) REFERENCES users(user_id) ON DELETE SET NULL,
-
-    INDEX idx_user (user_id),
-    INDEX idx_uploaded_at (uploaded_at),
-    INDEX idx_status (status)
-);
