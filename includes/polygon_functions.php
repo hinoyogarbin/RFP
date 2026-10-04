@@ -770,6 +770,7 @@ function buildMapPayload(array $polygons): array
             'code'    => (string)$polygon['polygon_code'],
             'name'    => (string)$polygon['polygon_name'],
             'project' => $polygon['project_name'] ?? null,
+            'location' => $polygon['location'] ?? null,
             'area'    => formatHectares($polygon['area_hectares'] ?? null),
             'steward' => $polygon['steward_name'] ?? null,
             'status'  => polygonStatusLabel((string)$polygon['status']),
