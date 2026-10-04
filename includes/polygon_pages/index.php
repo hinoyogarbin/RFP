@@ -118,14 +118,16 @@ require_once __DIR__ . '/../header.php';
     <h2 id="polygon-map-heading">Polygon Boundaries</h2>
     <p class="dashboard-map-caption">
         <?= count($polygons) ?> CENRO polygon<?= count($polygons) === 1 ? '' : 's' ?> match the current filters.
-        Drag to pan, use the zoom controls or mouse wheel, and choose a basemap.
+        Starts focused on one polygon with the surrounding map darkened.
+        Use the controls to focus another polygon or switch to the all-polygons overview.
     </p>
     <div id="polygon-map" class="dashboard-map"></div>
 </section>
 
 <?php
 $extraScripts = polygonLeafletScripts()
-    . '<script>initPolygonMap("polygon-map", ' . jsonForScript($mapPayload) . ', {locked: false});</script>';
+    . '<script>initPolygonMap("polygon-map", ' . jsonForScript($mapPayload) . ', '
+    . '{locked: true, allowOverview: true});</script>';
 
 require_once __DIR__ . '/../page_end.php';
 ?>

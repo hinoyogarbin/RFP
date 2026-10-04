@@ -37,7 +37,7 @@ function polygonLeafletScripts(): string
 {
     return '<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" '
         . 'integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>'
-        . '<script src="/RFP/assets/js/polygon_map.js?v=3"></script>';
+        . '<script src="/RFP/assets/js/polygon_map.js?v=4"></script>';
 }
 
 /**

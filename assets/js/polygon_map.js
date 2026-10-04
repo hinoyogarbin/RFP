@@ -10,7 +10,7 @@
  * Restricted maps show only ONE polygon at a time:
  *   - it opens fitted to the current polygon;
  *   - the fitted zoom is the minimum zoom (cannot zoom out);
- *   - panning is restricted to the polygon's bounds;
+ *   - map dragging and keyboard panning are disabled;
  *   - imagery outside the polygon is masked;
  *   - Previous / Next buttons (and a selector) move to another polygon.
  *
@@ -128,7 +128,7 @@
         if (polygon.label) {
             return polygon.label;
         }
-        return total > 1 ? 'Area ' + (index + 1) : (polygon.code || 'Area 1');
+        return polygon.code || 'Area ' + (index + 1);
     }
 
     function addBaseLayers(map) {
@@ -148,7 +148,7 @@
         return { satellite: layers[BASEMAPS.satellite.label], street: layers[BASEMAPS.street.label] };
     }
 
-    function buildNavBar(container) {
+    function buildNavBar(container, allowOverview) {
         var bar = document.createElement('div');
         bar.className = 'polygon-nav';
         bar.innerHTML =
@@ -157,6 +157,9 @@
             + '<select class="polygon-nav-select" aria-label="Go to area"></select>'
             + '<span class="polygon-nav-count"></span>'
             + '<button type="button" class="btn polygon-nav-reset" data-nav="reset">Reset view</button>'
+            + (allowOverview
+                ? '<button type="button" class="btn polygon-nav-mode" data-nav="mode"></button>'
+                : '')
             + '</div>'
             + '<button type="button" class="btn polygon-nav-btn" data-nav="next" aria-label="Next area">Next &#8250;</button>';
 
@@ -174,6 +177,8 @@
         polygons = (polygons || []).filter(function (p) { return polygonBounds(p) !== null; });
 
         var locked = options.locked !== undefined ? !!options.locked : !options.preview;
+        var allowOverview = !!options.allowOverview || !!options.preview;
+        container.classList.toggle('polygon-map-locked', locked);
 
         var map = L.map(elementId, {
             zoomControl: false,
@@ -237,7 +242,15 @@
                 maskLayer = null;
             }
             var world = [[-85, -180], [-85, 180], [85, 180], [85, -180]];
-            maskLayer = L.polygon([world].concat(outerRings(polygons[index])), MASK_STYLE).addTo(map);
+            var rings = [world];
+            polygons[index].rings.forEach(function (part) {
+                part.forEach(function (ring) {
+                    if (ring && ring.length >= 3) {
+                        rings.push(ring);
+                    }
+                });
+            });
+            maskLayer = L.polygon(rings, MASK_STYLE).addTo(map);
             maskLayer.bringToBack();
         }
 
@@ -260,14 +273,18 @@
             map.invalidateSize();
             map.fitBounds(bounds, { padding: [FIT_PADDING, FIT_PADDING], animate: false });
 
-            // The fitted zoom becomes the floor (no zooming out) and the
-            // polygon bounds become the pan limit.
+            // The fitted zoom becomes the floor, and focus mode cannot pan.
             map.setMinZoom(map.getZoom());
             map.setMaxBounds(bounds.pad(BOUNDS_PAD));
+            map.dragging.disable();
+            map.boxZoom.disable();
+            map.touchZoom.disable();
+            map.keyboard.disable();
         }
 
         function show(index, reset) {
             activeIndex = index;
+            container.classList.toggle('polygon-map-locked', locked);
 
             if (locked) {
                 drawMask(index);
@@ -275,6 +292,16 @@
                 lockTo(polygonBounds(polygons[index]));
                 updateNav();
             } else {
+                map.setMinZoom(0);
+                map.setMaxBounds(null);
+                map.dragging.enable();
+                map.boxZoom.enable();
+                map.touchZoom.enable();
+                map.keyboard.enable();
+                if (maskLayer) {
+                    map.removeLayer(maskLayer);
+                    maskLayer = null;
+                }
                 redraw();
                 var bounds = reset ? layerGroup.getBounds() : polygonBounds(polygons[index]);
                 if (bounds.isValid()) {
@@ -288,6 +315,7 @@
         var bar = null;
         var select = null;
         var counter = null;
+        var modeButton = null;
 
         function updateNav() {
             if (!bar) {
@@ -298,12 +326,17 @@
             counter.setAttribute('aria-live', 'polite');
             bar.querySelector('[data-nav="prev"]').disabled = activeIndex <= 0;
             bar.querySelector('[data-nav="next"]').disabled = activeIndex >= total - 1;
+            if (modeButton) {
+                modeButton.textContent = locked ? 'View all polygons' : 'Focus selected polygon';
+                modeButton.setAttribute('aria-label', modeButton.textContent);
+            }
         }
 
-        if (total > 1) {
-            bar = buildNavBar(container);
+        if (total > 0) {
+            bar = buildNavBar(container, allowOverview);
             select = bar.querySelector('.polygon-nav-select');
             counter = bar.querySelector('.polygon-nav-count');
+            modeButton = bar.querySelector('.polygon-nav-mode');
 
             polygons.forEach(function (p, i) {
                 var opt = document.createElement('option');
@@ -321,6 +354,9 @@
                 var direction = btn.getAttribute('data-nav');
                 if (direction === 'reset') {
                     show(activeIndex, true);
+                } else if (direction === 'mode') {
+                    locked = !locked;
+                    show(activeIndex);
                 } else {
                     show(activeIndex + (direction === 'next' ? 1 : -1));
                 }

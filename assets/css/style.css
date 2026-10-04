@@ -1099,12 +1099,16 @@ select:focus-visible,
     box-shadow: var(--elevation-1);
 }
 
-.polygon-map-section .leaflet-container {
+.polygon-map-section .leaflet-container:not(.polygon-map-locked) {
     cursor: grab;
 }
 
-.polygon-map-section .leaflet-container:active {
+.polygon-map-section .leaflet-container:not(.polygon-map-locked):active {
     cursor: grabbing;
+}
+
+.polygon-map-section .leaflet-container.polygon-map-locked {
+    cursor: default;
 }
 
 .dashboard-map-section h2 {
@@ -1162,6 +1166,7 @@ select:focus-visible,
 }
 
 .polygon-nav-select {
+    flex: 1 1 220px;
     min-width: 0;
     max-width: 100%;
     min-height: 44px;
@@ -1181,6 +1186,13 @@ select:focus-visible,
 }
 
 .polygon-nav-reset {
+    flex: 0 0 auto;
+    min-height: 40px;
+    padding: 7px 12px;
+    font-size: 13px;
+}
+
+.polygon-nav-mode {
     flex: 0 0 auto;
     min-height: 40px;
     padding: 7px 12px;
@@ -1258,21 +1270,17 @@ select:focus-visible,
     .polygon-nav-center {
         grid-column: 1 / -1;
         grid-row: 2;
+        flex-wrap: wrap;
         justify-content: stretch;
     }
 
     .polygon-nav-select {
-        flex: 1 1 auto;
-    }
-}
-
-@media (max-width: 380px) {
-    .polygon-nav-center {
-        flex-wrap: wrap;
-    }
-
-    .polygon-nav-select {
         flex-basis: 100%;
+    }
+
+    .polygon-nav-reset,
+    .polygon-nav-mode {
+        flex: 1 1 auto;
     }
 }
 
