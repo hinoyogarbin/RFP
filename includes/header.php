@@ -34,12 +34,17 @@ if (!empty($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= h($pageTitle) ?></title>
-    <link rel="stylesheet" href="/RFP/assets/css/style.css?v=10">
+    <link rel="stylesheet" href="/RFP/assets/css/style.css?v=12">
     <?= $extraHead ?? '' ?>
 </head>
 <body>
 <nav class="topbar">
-    <div class="topbar-left">
+    <a class="topbar-brand" href="<?= h($dashboardUrl) ?>">
+        <img class="topbar-logo" src="/RFP/assets/Logo.png" alt="">
+        <span class="topbar-brand-text">Reforestation Management Platform</span>
+    </a>
+
+    <div class="topbar-center">
         <div class="topbar-nav">
             <?php if (in_array($role, ['admin', 'manager', 'user'], true)): ?>
                 <a class="topbar-item <?= $isDashboard ? 'active' : '' ?>" href="<?= h($dashboardUrl) ?>">Dashboard</a>

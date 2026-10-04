@@ -6,9 +6,8 @@
  * at import time in includes/geo/proj.php), so no coordinate juggling
  * happens here.
  *
- * PRIVACY LOCK (default)
- * The polygons are reforested areas covered by legal documents, so the map
- * only ever shows ONE polygon at a time:
+ * LOCKED MODE
+ * Restricted maps show only ONE polygon at a time:
  *   - it opens fitted to the current polygon;
  *   - the fitted zoom is the minimum zoom (cannot zoom out);
  *   - panning is restricted to the polygon's bounds;
@@ -18,7 +17,9 @@
  * Options: { preview: bool, locked: bool, interactive: bool }
  *   preview  - admin import preview: all polygons shown, not locked, so the
  *              operator can verify the placement against surrounding roads.
- *   locked   - force the privacy lock on/off (default: on unless preview).
+ *   locked   - restrict the view to one polygon (default: on unless preview).
+ *              Set false for a normal map that shows every boundary and
+ *              supports unrestricted pan and zoom.
  */
 (function (global) {
     'use strict';
@@ -139,8 +140,10 @@
 
         layers[BASEMAPS.satellite.label].addTo(map);
 
-        L.control.layers(layers, null, { position: 'topright', collapsed: false }).addTo(map);
+        L.control.layers(layers, null, { position: 'topright', collapsed: true }).addTo(map);
         L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(map);
+
+        L.control.zoom({ position: 'topleft' }).addTo(map);
 
         return { satellite: layers[BASEMAPS.satellite.label], street: layers[BASEMAPS.street.label] };
     }
@@ -153,6 +156,7 @@
             + '<div class="polygon-nav-center">'
             + '<select class="polygon-nav-select" aria-label="Go to area"></select>'
             + '<span class="polygon-nav-count"></span>'
+            + '<button type="button" class="btn polygon-nav-reset" data-nav="reset">Reset view</button>'
             + '</div>'
             + '<button type="button" class="btn polygon-nav-btn" data-nav="next" aria-label="Next area">Next &#8250;</button>';
 
@@ -172,6 +176,7 @@
         var locked = options.locked !== undefined ? !!options.locked : !options.preview;
 
         var map = L.map(elementId, {
+            zoomControl: false,
             scrollWheelZoom: options.interactive !== false,
             zoomSnap: 0.25,
             zoomDelta: 0.5,
@@ -261,7 +266,7 @@
             map.setMaxBounds(bounds.pad(BOUNDS_PAD));
         }
 
-        function show(index) {
+        function show(index, reset) {
             activeIndex = index;
 
             if (locked) {
@@ -271,10 +276,11 @@
                 updateNav();
             } else {
                 redraw();
-                var bounds = layerGroup.getBounds();
+                var bounds = reset ? layerGroup.getBounds() : polygonBounds(polygons[index]);
                 if (bounds.isValid()) {
                     map.fitBounds(bounds, { padding: [20, 20], maxZoom: 18, animate: false });
                 }
+                updateNav();
             }
         }
 
@@ -289,11 +295,12 @@
             }
             select.value = String(activeIndex);
             counter.textContent = (activeIndex + 1) + ' of ' + total;
+            counter.setAttribute('aria-live', 'polite');
             bar.querySelector('[data-nav="prev"]').disabled = activeIndex <= 0;
             bar.querySelector('[data-nav="next"]').disabled = activeIndex >= total - 1;
         }
 
-        if (locked && total > 1) {
+        if (total > 1) {
             bar = buildNavBar(container);
             select = bar.querySelector('.polygon-nav-select');
             counter = bar.querySelector('.polygon-nav-count');
@@ -311,7 +318,12 @@
                     return;
                 }
                 map.closePopup();
-                show(activeIndex + (btn.getAttribute('data-nav') === 'next' ? 1 : -1));
+                var direction = btn.getAttribute('data-nav');
+                if (direction === 'reset') {
+                    show(activeIndex, true);
+                } else {
+                    show(activeIndex + (direction === 'next' ? 1 : -1));
+                }
             });
 
             select.addEventListener('change', function () {
@@ -341,7 +353,7 @@
             }, 200);
         });
 
-        show(0);
+        show(0, !locked);
         return map;
     }
 

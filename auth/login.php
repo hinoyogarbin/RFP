@@ -22,12 +22,15 @@ unset($_SESSION['old_username']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Reforestation Management Platform</title>
-    <link rel="stylesheet" href="/RFP/assets/css/style.css?">
+    <link rel="stylesheet" href="/RFP/assets/css/style.css?v=12">
 </head>
 <body>
 <main class="login-main">
     <div class="login-box">
-        <h1>Reforestation Management Platform</h1>
+        <div class="login-brand">
+            <img class="login-logo" src="/RFP/assets/Logo.png" alt="">
+            <h1>Reforestation Management Platform</h1>
+        </div>
         <h2>Login</h2>
 
         <?php if ($error): ?>

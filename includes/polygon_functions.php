@@ -218,6 +218,70 @@ function getPolygonsForFieldUser(int $userId): array
 }
 
 /**
+ * Summarises imported polygon data for a role-aware dashboard.
+ *
+ * When an assigned user ID is supplied, every metric and file summary is
+ * restricted to that user's polygons.
+ */
+function getPolygonDashboardAnalytics(?int $assignedUserId = null): array
+{
+    $pdo = getDbConnection();
+    $where = '';
+    $params = [];
+
+    if ($assignedUserId !== null) {
+        $where = ' WHERE assigned_user_id = :assigned_user';
+        $params['assigned_user'] = $assignedUserId;
+    }
+
+    $stmt = $pdo->prepare(
+        'SELECT COUNT(*) AS polygon_count,
+                COALESCE(SUM(area_hectares), 0) AS total_hectares,
+                SUM(CASE WHEN status = \'active\' THEN 1 ELSE 0 END) AS active_count,
+                SUM(CASE WHEN status = \'completed\' THEN 1 ELSE 0 END) AS completed_count,
+                SUM(CASE WHEN status = \'inactive\' THEN 1 ELSE 0 END) AS inactive_count,
+                SUM(CASE WHEN assigned_user_id IS NOT NULL THEN 1 ELSE 0 END) AS assigned_count,
+                COUNT(DISTINCT COALESCE(source_hash, source_file)) AS source_file_count
+         FROM polygons' . $where
+    );
+    $stmt->execute($params);
+    $summary = $stmt->fetch();
+
+    $stmt = $pdo->prepare(
+        'SELECT source_format, COUNT(*) AS polygon_count
+         FROM polygons' . $where . '
+         GROUP BY source_format
+         ORDER BY source_format'
+    );
+    $stmt->execute($params);
+    $formats = $stmt->fetchAll();
+
+    $stmt = $pdo->prepare(
+        'SELECT MAX(source_file) AS source_file,
+                MAX(source_format) AS source_format,
+                MAX(date_imported) AS date_imported,
+                COUNT(*) AS polygon_count
+         FROM polygons' . $where . '
+         GROUP BY COALESCE(source_hash, source_file, polygon_id)
+         ORDER BY date_imported DESC
+         LIMIT 5'
+    );
+    $stmt->execute($params);
+
+    return [
+        'polygon_count' => (int)($summary['polygon_count'] ?? 0),
+        'total_hectares' => (float)($summary['total_hectares'] ?? 0),
+        'active_count' => (int)($summary['active_count'] ?? 0),
+        'completed_count' => (int)($summary['completed_count'] ?? 0),
+        'inactive_count' => (int)($summary['inactive_count'] ?? 0),
+        'assigned_count' => (int)($summary['assigned_count'] ?? 0),
+        'source_file_count' => (int)($summary['source_file_count'] ?? 0),
+        'formats' => $formats,
+        'recent_imports' => $stmt->fetchAll(),
+    ];
+}
+
+/**
  * True when the polygon is assigned to the given user.
  * Used to gate a Field User's access to a polygon detail page.
  */

@@ -183,7 +183,7 @@ require_once __DIR__ . '/../header.php';
 
 <?php
 $extraScripts = polygonLeafletScripts()
-    . '<script>initPolygonMap("polygon-map", ' . jsonForScript($mapPayload) . ');</script>';
+    . '<script>initPolygonMap("polygon-map", ' . jsonForScript($mapPayload) . ', {locked: true});</script>';
 
 require_once __DIR__ . '/../page_end.php';
 ?>
