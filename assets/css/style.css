@@ -1289,3 +1289,104 @@ select:focus-visible,
         height: 380px;
     }
 }
+
+/* Collapsible navigation on narrow screens */
+.nav-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: var(--radius);
+    background: transparent;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.nav-toggle-icon,
+.nav-toggle-icon::before,
+.nav-toggle-icon::after {
+    display: block;
+    width: 20px;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.nav-toggle-icon {
+    position: relative;
+}
+
+.nav-toggle-icon::before,
+.nav-toggle-icon::after {
+    position: absolute;
+    left: 0;
+    content: "";
+}
+
+.nav-toggle-icon::before {
+    transform: translateY(-6px);
+}
+
+.nav-toggle-icon::after {
+    transform: translateY(6px);
+}
+
+.topbar.is-open .nav-toggle-icon {
+    background: transparent;
+}
+
+.topbar.is-open .nav-toggle-icon::before {
+    transform: rotate(45deg);
+}
+
+.topbar.is-open .nav-toggle-icon::after {
+    transform: rotate(-45deg);
+}
+
+@media (max-width: 900px) {
+    .nav-toggle-ready .nav-toggle {
+        display: inline-flex;
+        order: 2;
+        flex: 0 0 auto;
+    }
+
+    .nav-toggle-ready .topbar-brand {
+        order: 1;
+        flex: 1 1 0;
+    }
+
+    .nav-toggle-ready .topbar-center {
+        display: none;
+        order: 4;
+        width: 100%;
+        margin: 0;
+        overflow: visible;
+    }
+
+    .nav-toggle-ready .topbar.is-open .topbar-center {
+        display: block;
+    }
+
+    .nav-toggle-ready .topbar-nav {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        min-width: 0;
+        padding: 4px 0;
+    }
+
+    .nav-toggle-ready .topbar-item {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: var(--radius);
+    }
+
+    .nav-toggle-ready .topbar-right {
+        order: 3;
+        margin-left: auto;
+    }
+}

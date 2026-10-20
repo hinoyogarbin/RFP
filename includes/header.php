@@ -34,7 +34,8 @@ if (!empty($_SESSION['user_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= h($pageTitle) ?></title>
-    <link rel="stylesheet" href="/RFP/assets/css/style.css?v=13">
+    <link rel="stylesheet" href="/RFP/assets/css/style.css?v=14">
+    <script src="/RFP/assets/js/header-navigation.js?v=1" defer></script>
     <?= $extraHead ?? '' ?>
 </head>
 <body>
@@ -44,7 +45,12 @@ if (!empty($_SESSION['user_id'])) {
         <span class="topbar-brand-text">Reforestation Management Platform</span>
     </a>
 
-    <div class="topbar-center">
+    <button class="nav-toggle" type="button" aria-controls="site-navigation"
+            aria-expanded="false" aria-label="Open navigation menu">
+        <span class="nav-toggle-icon" aria-hidden="true"></span>
+    </button>
+
+    <div class="topbar-center" id="site-navigation">
         <div class="topbar-nav">
             <?php if (in_array($role, ['admin', 'manager', 'user'], true)): ?>
                 <a class="topbar-item <?= $isDashboard ? 'active' : '' ?>" href="<?= h($dashboardUrl) ?>">Dashboard</a>
